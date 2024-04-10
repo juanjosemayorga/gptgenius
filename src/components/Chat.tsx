@@ -5,17 +5,32 @@ import { useMutation } from '@tanstack/react-query';
 import { FormEvent, useState } from 'react';
 import toast from 'react-hot-toast';
 
+export type ChatMessage = {
+  role: string;
+  content: string;
+};
+
 export const Chat = () => {
   const [text, setText] = useState<string>('');
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
 
-  const { mutate } = useMutation({
-    mutationFn: (message: string) => generateChatResponse(message),
+  const { mutate, isPending, data } = useMutation({
+    mutationFn: (query: ChatMessage) => generateChatResponse([...messages, query]),
+    onSuccess: (data) => {
+      if (!data) {
+        toast.error('Something went wrong with the chat response...')
+        return;
+      }
+      setMessages((prev) => [...prev, data]);
+    }
   })
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    mutate(text)
+    const query = { role: 'user', content: text };
+    mutate(query);
+    setMessages((prev) => [...prev, query]);
+    setText('');
   };
 
   return (
