@@ -8,6 +8,7 @@ import {
   createNewTour,
   generateTourResponse,
   getExistingTour,
+  getTours,
 } from '@/utils/actions';
 import { TourInfo } from './TourInfo';
 
@@ -23,6 +24,10 @@ export const NewTour = () => {
       const newTour = await generateTourResponse(destination);
 
       if (newTour) {
+
+        newTour.city = newTour.city.toLowerCase();
+        newTour.country = newTour.country.toLowerCase();
+
         await createNewTour(newTour);
         queryClient.invalidateQueries({ queryKey: ['tours'] });
         return newTour;
@@ -38,6 +43,7 @@ export const NewTour = () => {
 
     const formData = new FormData(e.currentTarget);
     const destination = Object.fromEntries(formData.entries());
+
     mutate(destination as GetExistingTour);
   };
 

@@ -1,5 +1,10 @@
+import { CreateNewTour } from "@/utils/actions";
 
-export const TourInfo = ({ tour }) => {
+type Tour = {
+  tour: CreateNewTour;
+};
+
+export const TourInfo = ({ tour }: Tour) => {
   const { title, description, stops } = tour;
   return (
     <div className='max-w-2xl'>

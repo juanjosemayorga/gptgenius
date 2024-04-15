@@ -57,7 +57,6 @@ export const generateTourResponse = async ({ city, country }) => {
       return null;
     }
 
-    console.log(tourData.tour);
     return tourData.tour;
   } catch (error) {
     console.log(error);
@@ -94,3 +93,7 @@ export const createNewTour = async (tour: CreateNewTour) => {
     data: tour,
   });
 };
+
+export const getTours = async () => {
+  return prisma.tour.findMany();
+}
