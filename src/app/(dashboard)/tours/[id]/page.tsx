@@ -1,29 +1,28 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
+import axios from 'axios';
 
-import { generateTourImage, getSingleTour } from '@/utils/actions';
-import { TourInfo } from '@/components/TourInfo';
 import prisma from '@/utils/db';
 
-type SingleTourPageProps = {
-  params: {
-    id: string;
-  };
-};
+import { TourInfo } from '@/components/TourInfo';
+import { generateTourImage } from '@/utils/actions';
 
-const SingleTourPage = async ({ params }: SingleTourPageProps) => {
+const url = `https://api.unsplash.com/search/photos?client_id=${process.env.UNSPLASH_API_KEY}&query=`;
+
+const SingleTourPage = async ({ params }) => {
   const tour = await prisma.tour.findUnique({
     where: {
       id: params.id,
     },
   });
 
-  const tourImage = await generateTourImage({
-    city: tour.city,
-    country: tour.country,
-  });
+  const { data } = await axios(`${url}${tour.city}`);
+  const tourImage = data?.results[0]?.urls?.raw;
 
+  // const tourImage = await generateTourImage({
+  //   city: tour.city,
+  //   country: tour.country,
+  // });
   return (
     <div>
       <Link href='/tours' className='btn btn-secondary mb-12'>
