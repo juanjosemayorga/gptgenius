@@ -1,6 +1,7 @@
 'use client';
 
-import { generateChatResponse } from '@/utils/actions';
+import { fetchUserTokensById, generateChatResponse, subtractTokens } from '@/utils/actions';
+import { useAuth } from '@clerk/nextjs';
 import { useMutation } from '@tanstack/react-query';
 import { FormEvent, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -11,17 +12,29 @@ export type ChatMessage = {
 };
 
 export const Chat = () => {
+  const { userId } = useAuth();
+
   const [text, setText] = useState<string>('');
   const [messages, setMessages] = useState<any[]>([]);
 
-  const { mutate, isPending, data } = useMutation({
-    mutationFn: (query: ChatMessage) => generateChatResponse([...messages, query]),
-    onSuccess: (data) => {
-      if (!data) {
-        toast.error('Something went wrong with the chat response...')
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (query) => {
+      const currentTokens = await fetchUserTokensById(userId);
+
+      if (currentTokens < 100) {
+        toast.error('Token balance too low....');
         return;
       }
-      setMessages((prev) => [...prev, data]);
+
+      const response = await generateChatResponse([...messages, query]);
+
+      if (!response) {
+        toast.error('Something went wrong...');
+        return;
+      }
+      setMessages((prev) => [...prev, response.message]);
+      const newTokens = await subtractTokens(userId, response.tokens);
+      toast.success(`${newTokens} tokens remaining...`);
     }
   })
 
