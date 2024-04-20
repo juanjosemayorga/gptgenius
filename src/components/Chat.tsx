@@ -19,9 +19,9 @@ export const Chat = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (query) => {
-      const currentTokens = await fetchUserTokensById(userId);
+      const currentTokens = await fetchUserTokensById(userId!);
 
-      if (currentTokens < 100) {
+      if (currentTokens! < 100) {
         toast.error('Token balance too low....');
         return;
       }
@@ -33,15 +33,17 @@ export const Chat = () => {
         return;
       }
       setMessages((prev) => [...prev, response.message]);
-      const newTokens = await subtractTokens(userId, response.tokens);
+      const newTokens = await subtractTokens(userId!, response.tokens!);
       toast.success(`${newTokens} tokens remaining...`);
     }
   })
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const query = { role: 'user', content: text };
-    mutate(query);
+    mutate(query as any);
+
     setMessages((prev) => [...prev, query]);
     setText('');
   };

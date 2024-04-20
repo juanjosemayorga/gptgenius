@@ -1,14 +1,16 @@
 'use server';
 
+import { revalidatePath } from "next/cache";
 import OpenAI from "openai";
 import prisma from "./db";
-import { revalidatePath } from "next/cache";
+
+import { GenerateChatResponse, GenerateTourResponse } from "@/app/interfaces";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const generateChatResponse = async (chatMessages: any) => {
+export const generateChatResponse = async (chatMessages: GenerateChatResponse[]) => {
   try {
     const response = await openai.chat.completions.create({
       messages: [
@@ -30,7 +32,7 @@ export const generateChatResponse = async (chatMessages: any) => {
   }
 };
 
-export const generateTourResponse = async ({ city, country }) => {
+export const generateTourResponse = async ({ city, country }: GenerateTourResponse) => {
   const query = `Find a exact ${city} in this exact ${country}.
     If ${city} and ${country} exist, create a list of things families can do in this ${city},${country}.
     Once you have a list, create a one-day tour. Response should be  in the following JSON format:
@@ -55,8 +57,8 @@ export const generateTourResponse = async ({ city, country }) => {
       model: 'gpt-3.5-turbo',
       temperature: 0,
     });
-    // potentially returns a text with error message
-    const tourData = JSON.parse(response.choices[0].message.content);
+
+    const tourData = JSON.parse(response.choices[0].message.content as string);
 
     if (!tourData.tour) {
       return null;
@@ -157,7 +159,7 @@ export const generateTourImage = async ({ city, country }: GetExistingTour) => {
   }
 };
 
-export const fetchUserTokensById = async (clerkId) => {
+export const fetchUserTokensById = async (clerkId: string) => {
   const result = await prisma.token.findUnique({
     where: {
       clerkId,
@@ -167,7 +169,7 @@ export const fetchUserTokensById = async (clerkId) => {
   return result?.tokens;
 };
 
-export const generateUserTokensForId = async (clerkId) => {
+export const generateUserTokensForId = async (clerkId: string) => {
   const result = await prisma.token.create({
     data: {
       clerkId,
@@ -176,15 +178,17 @@ export const generateUserTokensForId = async (clerkId) => {
   return result?.tokens;
 };
 
-export const fetchOrGenerateTokens = async (clerkId) => {
+export const fetchOrGenerateTokens = async (clerkId: string) => {
   const result = await fetchUserTokensById(clerkId);
   if (result) {
+    // @ts-ignore
     return result.tokens;
   }
+  // @ts-ignore
   return (await generateUserTokensForId(clerkId)).tokens;
 };
 
-export const subtractTokens = async (clerkId, tokens) => {
+export const subtractTokens = async (clerkId: string, tokens: number) => {
   const result = await prisma.token.update({
     where: {
       clerkId,
