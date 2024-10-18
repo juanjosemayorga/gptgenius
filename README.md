@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TourGPT
 
-## Getting Started
+**TourGPT** is an AI-powered travel assistant built with **Next.js**, **TypeScript**, and the **OpenAI API**. It helps users generate personalized travel tours for any city worldwide, providing insights and recommendations with the power of artificial intelligence. The application features four main sections:
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Chat:**
+  Interact with a chatbot that can answer any question about cities across the globe, using AI to provide real-time travel advice.
+- **New Tour:**
+  Simply enter the name of the city you want to visit, and TourGPT will generate a custom tour plan for you, powered by AI.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Tours:**
+  This section displays all the tours you’ve created, allowing you to revisit them whenever needed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Profile:**
+  Manage your personal details, handled securely with **Clerk**, and check your remaining token balance to use the app.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+---
 
-## Learn More
+### Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Next.js** for server-side rendering and web app structure
+- **TypeScript** for strong typing and scalability
+- **OpenAI API** for AI-driven recommendations and chat
+- **Clerk** for user authentication and profile management
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Installation (Development Mode)
 
-## Deploy on Vercel
+Follow these steps to set up **TourGPT** for local development:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prerequisites
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Node.js (v14 or higher)
+- Docker
+- Prisma
+- Clerk account
+
+### Steps
+
+1. **Install dependencies**
+   Run the following command to install all project dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. **Set up environment variables**
+   Create an `.env` file by copying `.env.sample`:
+
+   ```bash
+   cp .env.sample .env
+   ```
+
+   Then, fill in the environment variables:
+
+   - **Clerk API Keys**: You need to create a Clerk account and generate the required API keys.
+   - **OpenAI API Key**: Obtain your OpenAI API key and add it to the `.env` file.
+   - **Database Configuration**: Add your database connection details.
+
+3. **Start Docker**
+   Bring up the Docker container by running:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Generate Prisma Client**
+   After Docker is up, generate the Prisma client:
+
+   ```bash
+   npx prisma generate
+   ```
+
+5. **Run Prisma Migrations**
+   Apply the Prisma migrations to the database:
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. **Open Prisma Studio**
+   To visualize and manage your database, start Prisma Studio:
+
+   ```bash
+   npx prisma studio
+   ```
+
+7. **Run the development server**
+   Finally, start the application in development mode:
+
+   ```bash
+   npm run dev
+   ```
+
+---
+
+Now you should be able to access **TourGPT** in your local environment.
